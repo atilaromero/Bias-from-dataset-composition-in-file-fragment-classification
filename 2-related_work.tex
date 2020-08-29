@@ -1,0 +1,161 @@
+The early studies on data carving used private datasets
+\cite{karresand_file_2006} \cite{veenman_statistical_2007} \cite{erbacher_identification_2007} \cite{moody_sadi-statistical_2008} \cite{calhoun_predicting_2008} \cite{li_novel_2010} \cite{conti_automated_2010} \cite{kattan_gp-fileprints:_2010},
+making it difficult to compare the results of different studies. In 2009, Garfinkel \textit{et al.} \cite{garfinkel_bringing_2009} published the Govdocs1 dataset with 1 million files (a small amount of those files was removed later, for legal reasons). While some of the later works on the field still use private datasets, the Govdocs1 dataset has become the most used choice in studies related to data carving. This related work summary focuses on studies on file fragment classification that used the Govdocs1 dataset.
+
+Depending on the objective, the focus of each study may either be whole file classification or file fragment classification. Whole file classification is generally an easier task because most file types, even those with high entropy and low compression rates, have well-structured headers, with easily recognizable patterns.
+
+Most of the early work in this field used some form of dimensionality reduction in the input data before performing classification, as byte frequency distribution 
+\cite{karresand_oscarfile_2006} \cite{harris_using_2007} \cite{amirani_new_2008} \cite{ahmed_content-based_2010} \cite{ahmed_fast_2010} \cite{sportiello_context-based_2012} \cite{amirani_feature-based_2013} \cite{qiu_new_2014} \cite{maslim_distributed_2014} \cite{ali_classification_2018}, compression rate \cite{axelsson_normalised_2010} \cite{penrose_approaches_2013}, and various statistical techniques \cite{veenman_statistical_2007} \cite{erbacher_identification_2007} \cite{moody_sadi-statistical_2008} \cite{calhoun_predicting_2008} \cite{li_novel_2010} \cite{kattan_gp-fileprints:_2010} \cite{gopal_statistical_2011}. The usage of raw bytes \footnote{raw bytes: the original bytes of the file, without conversion or dimensionality reduction} as input is recently becoming more popular \cite{hiester_file_2018} \cite{chen_file_2018} \cite{wang_sparse_2018} \cite{wang_file_2018} \cite{vulinovic_neural_2019},
+especially in studies applying machine learning techniques, which seems to be a rising trend in the last ten years.
+
+Each of the following studies chose a subset of file types from the Govdocs1 dataset, splitting this subset further into training and validation parts. The training dataset was used to train the machine learning solution to classify file fragments, while the validation dataset was used to verify how accurately the model could predict the type of the file from which the fragment was extracted from.
+
+Axelsson \cite{axelsson_normalised_2010} used the normalized compression distance as an input feature to a kNN algorithm, picking pairs of 512-byte fragments, compressing them with the bzip2 algorithm and comparing the length of the results.
+He got an average accuracy of around 34\% using 28 file types.
+
+Fitzgerald \textit{et al.} \cite{fitzgerald_using_2012}  used an SVM classifier with various statistical measures as input features, including unigram and bigram\footnote{
+    In this context, unigram is a single byte, while bigrams are sequences of two bytes.
+} histogram counts, Shannon entropy, and compression length.
+Omitting the first and the last fragments of each file, they got an average accuracy of 49.1\% using 24 file types.
+
+Beebe \textit{et al.} \cite{beebe_sceadan:_2013}
+compared various measures of complexity and byte frequency distributions of 512-byte fragments as input features to an SVM algorithm. They used 8 data types, txt, base64, base85, urlencoded, fat fs data, ntfs fs data, ext fs data, aes256, and
+30 file types
+from the Govdocs1 dataset and some other sources (19 are at least partially from the Govdocs1 dataset). They got an average accuracy of 73.4\% combining unigram and bigrams as input features.
+
+Chen \textit{et al.} \cite{chen_file_2018}
+used a Convolutional Neural Network (CNN) with five convolutional layers and 3 fully connected layers to classify fragments of 4096 bytes, converting each fragment into a 64x64 grayscale picture.
+They got an average accuracy of 70.9\% using 16 file types.
+
+Hiester \cite{hiester_file_2018} apparently was the first to use an LSTM network to perform file fragment classification. He compared the results of three types of neural networks: feedforward, convolutional, and LSTM. He used four file types from the Govdocs1 dataset.
+Each bit of a 512-byte fragment was translated into two features, resulting in 8192 features per block (512*8*2). The first and last sectors of each file in the training set were discarded. In the experiments, the datasets were limited to one gigabyte to fit in memory. He got an average accuracy of 98\% using an LSTM network, 73\% using CNN, and 76\% using MLP.
+
+Wang \textit{et al.} \cite{wang_sparse_2018} 
+used sparse dictionaries for n-grams to extract features of 512-byte fragments, using this as input to an SVM classifier.
+They got an average accuracy of 61.3\% using 18 file types.
+
+Wang \textit{et al.} \cite{wang_file_2018}  
+compared CNN, SVM, kNN, and XGboost, with fragments of different sizes, converting each byte to a 256-length vector (one-hot encoding). The CNN combined three parallel convolutional layers of widths 4, 8 and 16.
+They used 20 file types from the Govdocs1 dataset.
+Using CNN, they got an average accuracy of around 68\% with 512-byte fragments, and around 78\% with 4096-byte fragments.
+
+Vulinović \textit{et al.} \cite{vulinovic_neural_2019}
+compared a CNN with MLP, using 512 raw bytes as the CNN input, and byte histograms as input to the MLP.
+Using 18 file types, they got a macro average F1-score of 61\% using CNN and 81\% using MLP.
+
+Table \ref{tab:datacarvingstudies} summarizes 
+the results of file fragment classification studies using Govdocs1 dataset and Table \ref{tab:studiesfiletypes}
+lists the file types used in each study.
+
+\begin{table*}[!ht]
+\caption{\label{tab:datacarvingstudies}File fragment classification studies using the Govdocs1 dataset}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|}
+\hline
+Study                                          & SVM & kNN & NN   & Dataset       & Raw   & Fragment & Number   & Accuracy   & F1-score  \\
+                                               &     &     &      &               & bytes & size     & of types &            &           \\ \hline
+Axelsson \cite{axelsson_normalised_2010}       &     & x   &      & Govdocs1      & No    & 512      & 28       & 34\%       &           \\ \hline
+Fitzgerald \textit{et al.} \cite{fitzgerald_using_2012} & x   &     &      & Govdocs1      & No    & 512      & 24       & 49\%       & 48\%      \\ \hline
+Beebe \textit{et al.} \cite{beebe_sceadan:_2013}        & x   &     &      & Govdocs1 +    & No    & 512      & 38       & 73\%       &           \\
+                                               &     &     &      & other sources &       &          &          &            &           \\ \hline
+Hiester \cite{hiester_file_2018}               &     &     & MLP  & Govdocs1      & Yes   & 512      & 4        & 77\%       &           \\
+                                               &     &     & CNN  &               &       &          &          & 73\%       &           \\
+                                               &     &     & LSTM &               &       &          &          & 98\%       &           \\ \hline
+Chen \cite{chen_file_2018}                     &     &     & CNN  & Govdocs1      & Yes   & 4096     & 16       & 71\%       &           \\ \hline
+Wang \cite{wang_sparse_2018}                   & x   &     &      & Govdocs1      & Yes   & 512      & 18       & 61\%       & 61\%      \\ \hline
+Wang \cite{wang_file_2018}                     &     &     & CNN  & Govdocs1      & Yes   & 512      & 20       & 68\%       &           \\
+                                               &     &     &      &               &       & 4096     &          & 78\%       &           \\ \hline
+Vulinovic \cite{vulinovic_neural_2019}         &     &     & MLP  & Govdocs1      & Yes   & 512      & 18       &            & 81\%      \\
+                                               &     &     & CNN  &               &       &          &          &            & 61\%      \\ \hline
+\end{tabular}}
+\end{table*}
+
+
+\begin{table}[!ht]
+    \centering
+    \caption{The Govdocs1 dataset and file types used in each study}
+    \label{tab:studiesfiletypes}
+\renewcommand{\arraystretch}{0.7}
+\footnotesize
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|l|}
+\hline
+Extension & Number of files & Number of blocks
+                                            & \rotatebox{90}{this study}
+                                                & \rotatebox{90}{Axelsson \cite{axelsson_normalised_2010}}
+                                                    & \rotatebox{90}{Fitzgerald \textit{et al.} \cite{fitzgerald_using_2012}}
+                                                        & \rotatebox{90}{Beebe \textit{et al.} \cite{beebe_sceadan:_2013}}
+                                                            & \rotatebox{90}{Hiester \cite{hiester_file_2018}}
+                                                                & \rotatebox{90}{Chen \cite{chen_file_2018}}
+                                                                    & \rotatebox{90}{Wang \cite{wang_sparse_2018}}
+                                                                        & \rotatebox{90}{Wang \cite{wang_file_2018}}
+                                                                            & \rotatebox{90}{Vulinovic \cite{vulinovic_neural_2019}}
+                                                   \\ \hline
+                                                      \hline
+pdf       & 231232          & 268071071     & x & x & x & x &   & x & x & x & x   \\ \hline
+html      & 214568          & 25710908      & x & x & x & x &   & x & x & x & x   \\ \hline
+jpg       & 109233          & 73242253      & x & x & x & x & x & x & x & x & x   \\ \hline
+txt       & 78286           & 99435540      & x &   & x & x &   &   & x & x & x   \\ \hline
+doc       & 76616           & 60654930      & x & x & x & x &   & x & x & x & x   \\ \hline
+xls       & 62635           & 58718224      & x & x & x & x &   & x & x & x & x   \\ \hline
+ppt       & 49702           & 251210471     & x & x & x & x &   & x & x & x & x   \\ \hline
+gif       & 36302           & 5962516       & x & x & x & x & x & x & x & x & x   \\ \hline
+xml       & 33458           & 16954875      & x & x & x & x & x & x & x & x & x   \\ \hline
+ps        & 22015           & 56547464      & x & x & x & x &   &   & x & x & x   \\ \hline
+csv       & 18360           & 6843009       & x & x & x & x & x & x & x & x & x   \\ \hline
+gz        & 13725           & 17748905      & x & x & x & x &   & x & x & x & x   \\ \hline
+log       & 9976            & 8467819       & x &   &   & x &   & x &   & x &     \\ \hline
+eps       & 5191            & 5756138       & x & x &   &   &   &   &   &   &     \\ \hline
+unk       & 5186            & 2983922       &   &   &   &   &   &   &   & x &     \\ \hline
+png       & 4125            & 2207489       & x & x & x & x &   & x & x & x & x   \\ \hline
+swf       & 3476            & 3798321       & x & x & x &   &   &   & x & x & x   \\ \hline
+dbase3    & 2601            & 38972         & x &   &   &   &   &   &   & x &     \\ \hline
+pps       & 1619            & 7432480       & x & x & x &   &   &   &   &   &     \\ \hline
+rtf       & 1125            & 958239        & x &   & x &   &   & x & x & x & x   \\ \hline
+kml       & 993             & 309422        & x &   &   &   &   &   &   &   &     \\ \hline
+kmz       & 943             & 549462        & x &   &   &   &   &   &   &   &     \\ \hline
+text      & 839             & 1527118       &   & x &   &   &   & x &   &   &     \\ \hline
+hlp       & 659             & 8692          & x &   &   &   &   &   &   &   &     \\ \hline
+f         & 602             & 94543         & x &   &   &   &   &   &   & x &     \\ \hline
+sql       & 462             & 244634        & x & x & x &   &   &   &   &   &     \\ \hline
+wp        & 364             & 87643         & x &   &   &   &   &   &   &   &     \\ \hline
+dwf       & 299             & 85500         & x &   &   &   &   &   &   &   &     \\ \hline
+java      & 292             & 14530         & x & x & x & x &   & x &   & x &     \\ \hline
+pptx      & 215             & 1151796       & x & x & x & x &   &   & x &   & x   \\ \hline
+% fits      & 182             & 678128        &   &   &   &   &   &   &   &   &     \\ \hline
+% tmp       & 180             & 28426         &   &   &   &   &   &   &   &   &     \\ \hline
+tex       & 163             & 10520         &   &   & x &   &   &   &   &   &     \\ \hline
+docx      & 163             & 65969         &   & x & x & x &   & x & x &   & x   \\ \hline
+% troff     & 110             & 8020          &   &   &   &   &   &   &   &   &     \\ \hline
+bmp       & 72              & 62686         &   & x & x & x &   &   &   &   &     \\ \hline
+% sgml      & 62              & 44138         &   &   &   &   &   &   &   &   &     \\ \hline
+% gls       & 60              & 517           &   &   &   &   &   &   &   &   &     \\ \hline
+pub       & 55              & 1421          &   & x &   &   &   &   &   &   &     \\ \hline
+xlsx      & 37              & 12910         &   & x & x & x &   &   & x &   & x   \\ \hline
+% fm        & 25              & 6717          &   &   &   &   &   &   &   &   &     \\ \hline
+zip       & 10              & 31525         &   & x & x &   &   &   &   &   &     \\ \hline
+ttf       & 10              & 1540          &   & x &   &   &   &   &   &   &     \\ \hline
+xbm       & 8               & 578           &   & x &   &   &   &   &   &   &     \\ \hline
+% wk1       & 7               & 6493          &   &   &   &   &   &   &   &   &     \\ \hline
+% sys       & 7               & 15            &   &   &   &   &   &   &   &   &     \\ \hline
+% ileaf     & 4               & 1656          &   &   &   &   &   &   &   &   &     \\ \hline
+% exported  & 3               & 324           &   &   &   &   &   &   &   &   &     \\ \hline
+% data      & 3               & 1733          &   &   &   &   &   &   &   &   &     \\ \hline
+% odp       & 2               & 2384          &   &   &   &   &   &   &   &   &     \\ \hline
+% mac       & 2               & 0             &   &   &   &   &   &   &   &   &     \\ \hline
+% lnk       & 2               & 2             &   &   &   &   &   &   &   &   &     \\ \hline
+js        & 2               & 36            &   & x &   &   &   &   &   &   &     \\ \hline
+% g3        & 2               & 498           &   &   &   &   &   &   &   &   &     \\ \hline
+% chp       & 2               & 73            &   &   &   &   &   &   &   &   &     \\ \hline
+% 123       & 2               & 434           &   &   &   &   &   &   &   &   &     \\ \hline
+% wk3       & 1               & 229           &   &   &   &   &   &   &   &   &     \\ \hline
+% vrml      & 1               & 660           &   &   &   &   &   &   &   &   &     \\ \hline
+% squeak    & 1               & 25354         &   &   &   &   &   &   &   &   &     \\ \hline
+% py        & 1               & 480           &   &   &   &   &   &   &   &   &     \\ \hline
+% pst       & 1               & 20            &   &   &   &   &   &   &   &   &     \\ \hline
+% icns      & 1               & 0             &   &   &   &   &   &   &   &   &     \\ \hline
+% bin       & 1               & 7             &   &   &   &   &   &   &   &   &     \\ \hline
+\end{tabular}
+\end{table}
+
+
+In the early stages of the study described in this dissertation, the search for a better model was assumed to be the best approach to improve file fragment classification results. This assumption seems to be also present in the many of the reviewed works, as their approaches suggest. This study found indications that this assumption may be false, and that further improvement may require a review of the labeling system commonly used, that uses the extension of the file as the label for all its fragments.
