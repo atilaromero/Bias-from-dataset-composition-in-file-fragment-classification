@@ -1,6 +1,6 @@
 The early studies on data carving used private datasets
 \cite{karresand_file_2006} \cite{veenman_statistical_2007} \cite{erbacher_identification_2007} \cite{moody_sadi-statistical_2008} \cite{calhoun_predicting_2008} \cite{li_novel_2010} \cite{conti_automated_2010} \cite{kattan_gp-fileprints:_2010},
-making it difficult to compare the results of different studies. In 2009, Garfinkel \textit{et al.} \cite{garfinkel_bringing_2009} published the Govdocs1 dataset with 1 million files (a small amount of those files was removed later, for legal reasons). While some of the later works on the field still use private datasets, the Govdocs1 dataset has become the most used choice in studies related to data carving. This related work summary focuses on studies on file fragment classification that used the Govdocs1 dataset.
+making it difficult to compare the results of different studies. In 2009, Garfinkel \textit{et al.} \cite{garfinkel_bringing_2009} published the Govdocs1 dataset with 1 million files (a small amount of those files was removed later, for legal reasons). While some of the later works on the field still use private datasets, the Govdocs1 dataset has become the most used choice in studies related to data carving. This related work summary focuses on studies on file fragment classification that used the Govdocs1 dataset from 2009 to 2019.
 
 Depending on the objective, the focus of each study may either be whole file classification or file fragment classification. Whole file classification is generally an easier task because most file types, even those with high entropy and low compression rates, have well-structured headers, with easily recognizable patterns.
 
@@ -158,4 +158,4 @@ js        & 2               & 36            &   & x &   &   &   &   &   &   &   
 \end{table}
 
 
-In the early stages of the study described in this dissertation, the search for a better model was assumed to be the best approach to improve file fragment classification results. This assumption seems to be also present in the many of the reviewed works, as their approaches suggest. This study found indications that this assumption may be false, and that further improvement may require a review of the labeling system commonly used, that uses the extension of the file as the label for all its fragments.
+As Table \ref{tab:studiesfiletypes} shows, each study on file fragment classification used a different set of file types during dataset composition. This paper explores how this seemingly minor detail may have had a major impact on results.

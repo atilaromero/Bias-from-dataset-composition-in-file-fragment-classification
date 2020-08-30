@@ -1,43 +1,73 @@
-TODO: rewrite
-this chapter describes several neural network training sessions using different sets of file types and the attempt to understand how the accuracy of the resulting models are affected by composition of file types in the set.
+To understand the impact that the choice of file types may have on the accuracy of a file fragment classification model, three experiments where conducted: comparison with other works, accuracy of pairs of classes, and accuracy vs. number of classes. 
 
 \subsection{Comparison with other works}
-The model ``CLD'' was chosen to be compared with other works because it was among the three models with the highest accuracy, but achieved its results in less time and showed high resilience to changes in parameters during the tests, while the others did not.
 
-In a second stage, a longer training session was performed, using a batch size of 300 samples instead of 100, and increasing the improvement threshold of the early stopping condition (maximum number of epochs to wait for improvements) from 10 to 20. These parameters were chosen by trial and error. For the initial 28 file types, the ``CLD'' model training time increased from eight minutes to three hours using these parameters.
+This experiment uses a small neural network to try to replicate the results that other studies achieved using different models, by following the file type composition that each one used.
 
-Using longer training sessions, the accuracy for the 28 file types used in the first stage increased from 54\% to 63\%. Using the same file types of other works, the ``CLD'' model achieved an accuracy of 
-67\% for the file types from Chen \textit{et al.} \cite{chen_file_2018},
-91\% for Hiester \cite{hiester_file_2018}, 
-59\% for Wang \textit{et al.} \cite{wang_sparse_2018},
-65\% for Wang \textit{et al.} \cite{wang_file_2018},
+After some experimentation, a three layer neural network architecture named ``CLD'', described further ahead, was chosen to be compared with other works.
+
+For each comparison, a new model was trained from scratch, with a dataset composed from the same file types of each of the most recent works listed in Table \ref{tab:datacarvingstudies}: 
+Hiester \cite{hiester_file_2018}, 
+Chen \textit{et al.} \cite{chen_file_2018},
+Wang \textit{et al.} \cite{wang_sparse_2018},
+Wang \textit{et al.} \cite{wang_file_2018},
 and
-61\% for Vulinović \textit{et al.} \cite{vulinovic_neural_2019}.
+Vulinović \textit{et al.} \cite{vulinovic_neural_2019}.
+The final layer of the neural network was adjusted to match the number of file types in the set.
+
+This comparison has three important restrictions.
+Chen used 4096 bytes for the block size, while this work used 512 bytes only.
+Vulinović got an F1-score\footnote{
+    In binary classification problems, F1-score is the harmonic mean between precision and recall. In this context, precision is the number of true positives divided by the sum between true positives and false positives, while recall is the number of true positives divided by the sum of true positives and false negatives.
+} of 81\% for the Multilayer Perceptron (MLP) fed with byte histograms, a better result than the one obtained with a Convolutional Neural Network (CNN) fed with raw bytes, 61\%. But the comparison with the ``CLD'' model of this study was based on Vulinović results with the CNN, not the MLP, because it is a more similar solution, one that uses raw bytes instead of byte histograms. Additionally, his results use F1-score, while this work measured accuracy. 
+
+For comparison with the other two experiments, an additional model using 28 file types in the dataset composition was also trained.
 
 \subsection{Accuracy of pairs of classes}
+This experiment investigates how similar each file type is to others, to identify those that are easier to classify. 
 
-In addition to this sampling of extensions using different quantities of classes, all 378 combinations of pairs of extensions were compared. Each pair was used to compose a dataset and to train a new model for each one, using the same process described in the previous section.
+All 378 combinations\footnote{$(28 * 27)/2 = 378$} of pairs of extensions were compared. Each pair was used to compose a dataset and to train a new model for each one. The resulting accuracy of the model should indicate if the model is able to distinguish the file types or not. An accuracy value close to 1.0 indicates that the two file types are easy to distinguish, while a value close to 0.5 indicates that the model cannot distinguish the file types, as 0.5 is the value that would be obtained by random chance.
 
-Given the number of different models trained (135 for the N classes phase and 378 for the pairs), it was important to use a model architecture that had a fast training time. Models trained with the chosen architecture took about 10 minutes to train. Without this short training period, this research part would not be feasible.
+The worst value of accuracy obtained when comparing one extension to the other 27 was used as a practical measure of how easy this extension could be classified.
 
-
+Given the number of different models trained, it was important to use a model architecture that had a fast training time. Models trained with the chosen architecture took about 10 minutes to train. Without this short training period, this research step would not be feasible.
 
 \subsection{Accuracy vs. number of classes}
-Several independent models with the same general architecture, but different weights, were trained with 2 to 28 extensions from the Govdocs1 dataset. For each number in the range 2 to 28, a random subset of extensions was selected to compose the dataset. Each extension has 200 file samples, half placed in the training dataset and half in the validation dataset. Each dataset was used to train a new model, that should distinguish between the selected subsets of extensions in that filtered dataset. This process was repeated five times.
+This experiment uses the results of the previous experiment to explore how different dataset compositions affects the model final accuracy.
+
+First, 135\footnote{$ 27 * 5 = 135$} independent models with the same general architecture, but different weights, were trained with 2 to 28 extensions from the Govdocs1 dataset. For each number in the range 2 to 28, a random subset of extensions was selected to compose the dataset. Each extension had 200 file samples, half placed in the training dataset and half in the validation dataset. Each dataset was used to train a new model, that should distinguish between the selected subsets of extensions in that filtered dataset. This process was repeated five times.
+
+In a second phase, instead of randomly choosing file types, the results of the previous experiment were used to select easy to classify file types and hard to classify file types. To make that distinction, the value of the worst pair comparison of each extension was used. 
+
+\subsection{Dataset sampling}
+
+This study uses the Govdocs1 dataset \cite{garfinkel_bringing_2009}, which was fully downloaded and then organized by file extension.
+This dataset has files with 63 different extensions. The 33 extensions with less than 200 files were discarded, to ensure the training and validation dataset would have at least 100 files of each file type.
+The  ``text'' and ``unk'' extensions were discarded because examination showed that files with these extensions use multiple formats and they do not correspond to a single file type.
+The remaining 28 extensions are listed in Table \ref{tab:studiesfiletypes}.
+
+To select a sample instance from the Govdocs1 dataset, first, a random file is selected among those available, without replacement. Then, a block from this file is randomly selected. After all files have participated in the process, the process may be repeated as long as necessary. This way, all files are considered and the classes are easily balanced.
+This contrasts with the sampling technique applied in other works, where all the sectors are grouped before sampling, which may lead to an imbalance between classes.
+
+The class label used for each sample is the file type extension from where it was extracted.
+
+The first experiment used a batch size of 300 samples, while the other two used 100 samples.
 
 \subsection{Model}
-TODO: CLD
-
-The model architecture used in this research stage, ``CLD'', is described in the previous chapter and has three layers. The first is a convolutional layer with 256 output units, a window of size 16, and a stride of 16. The second is an LSTM layer of 128 units. The last is a fully-connected layer where the number of output units matches the number of classes of the input dataset.
-The same dataset handling, sampling, output, and input encoding described in Chapter 4 were used here.
+The model architecture used in this research, referred to as``CLD'', has three layers. The first is a convolutional layer with 256 output units, a window of size 16, and a stride of 16. The second is an LSTM layer of 128 units. The last is a fully-connected layer where the number of output units matches the number of classes of the input dataset.
 
 %optimization
 All the training sessions used the Adam \cite{kingma_adam:_2014}
-optimization algorithm to guide backpropagation, which was selected because it performed well in the preliminary tests without requiring fine-tuning of parameters.
+optimization algorithm to guide backpropagation and categorical cross-entropy as the loss function.
 
 % Constraints
-TODO: different contraints for each experiment
-The models were trained until no further improvement was observed in the last 10 epochs, using categorical cross-entropy loss.
+In the first experiment, the models were trained until no further improvement was observed in the last 20 epochs. In the other two experiments, this threshold was decreased to 10 epochs.
+
+\subsection{Inputs}
+The input features of the neural network for each instance are a 512x256 matrix representing only one block of 512 bytes of a random file of the dataset. Each of the 512 bytes is one-hot encoded, meaning that its value is converted into a vector with 256 elements, with only one of them set to 1, corresponding to the value of the byte, while the others are set to zero.
+
+\subsection{Outputs}
+The output of the neural network for a given instance is a vector with a size equal to the number of classes, subject to a softmax function, which applies the exponential function on the vector and then normalizes it. Each value will represent the predicted probability that the instance belongs to a specific class.
 
 \subsection{Hardware and software}
 The main software and frameworks used to build the experiments were Python 3.6 
