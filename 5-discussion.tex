@@ -1,9 +1,11 @@
 A comparison was made between a chosen model, ``CLD'', and recent works in the field. While ``CLD'' achieved slight lower accuracy values than the other studies, it can be noticed that the values are similar:
 while the result values of these other works range from 61\% to 98\%, a difference of 37\%, the differences between the results from this study and theirs do not exceed 7\%. This is an indication that the high  variability that these studies show between each other is caused by the difference in the file types they choose.
 
-It was demonstrated that the accuracy of a new model may be manipulated by the selection of file types that will compose the dataset. 
-Some file types when included in the experiment have a much higher negative impact than others. This observation was demonstrated in the ``hard file types first'' and ``easy file types first'' of Figure \ref{fig:nclasses}, where the file types selected to compose were intentionally chosen, once to degrade results and once to improve them.
+It was demonstrated that the accuracy of a new model may be controlled by selecting the file types that will compose the dataset. 
+Some file types when included in the experiment have a much higher negative impact than others. This observation was demonstrated in the ``hard file types first'' and ``easy file types first'' of Figure \ref{fig:nclasses}, where the file types selected to compose the dataset were intentionally chosen, once to degrade results and once to improve them.
 
-These results highlight the importance of the file types chosen to compose the dataset and explain why the ``CLD'' model was able to almost match the results of previous works in the field, even thought they have achieved different results, as shown in Figure \ref{fig:cldothers}: the difference in choices of file types had a bigger impact than the choices of models.
+% These results highlight the importance of the file types chosen to compose the dataset and explain why the ``CLD'' model was able to almost match the results of previous works in the field, even thought they have achieved different results, as shown in Figure \ref{fig:cldothers}: the difference in choices of file types had a higher impact than the choices of models.
 
-The Govdocs1 dataset brought an important basis to compare different carving solutions. But to fairly compare results of different studies, the same set of file types should be used in the comparison.
+It is important to emphasize that the validity of the experiments of the analysed studies is not in question, since within each study the comparisons use a fixed set of file types. The problem arises only when comparisons are made between different studies.
+
+The Govdocs1 dataset brought an important basis to compare different carving solutions. But the main conclusion of this paper is that to fairly compare results of different studies in file fragment classification, the exact same set of file types used in the original study must be first replicated.
